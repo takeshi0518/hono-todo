@@ -1,0 +1,22 @@
+{
+  "name": "hono-todo",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/takeshi0518/hono-todo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/takeshi0518/hono-todo/issues"
+  },
+  "homepage": "https://github.com/takeshi0518/hono-todo#readme"
+}
