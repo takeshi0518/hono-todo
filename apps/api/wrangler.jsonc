@@ -1,8 +1,15 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "api",
+  "name": "hono-todo-api",
   "main": "src/index.ts",
-  "compatibility_date": "2026-07-17"
+  "compatibility_date": "2026-07-17",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "hono-todo-db",
+      "database_id": "6b6bd1c1-61c7-4cd1-8feb-b52bed481a83"
+    }
+  ]
   // "compatibility_flags": [
   //   "nodejs_compat"
   // ],
@@ -19,13 +26,6 @@
   //   {
   //     "binding": "MY_BUCKET",
   //     "bucket_name": "my-bucket"
-  //   }
-  // ],
-  // "d1_databases": [
-  //   {
-  //     "binding": "MY_DB",
-  //     "database_name": "my-database",
-  //     "database_id": ""
   //   }
   // ],
   // "ai": {
