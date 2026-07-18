@@ -14,7 +14,7 @@ app.post('/todos', async (c) => {
   } catch {
     return c.json({ error: 'invalid JSON' }, 400);
   }
-  
+
   if (typeof body.title !== 'string' || body.title.trim() === '') {
     return c.json({ error: 'title is required' }, 400);
   }
@@ -26,6 +26,19 @@ app.post('/todos', async (c) => {
     .first();
 
   return c.json(created, 201);
+});
+
+app.delete('/todos/:id', async (c) => {
+  const id = c.req.param('id');
+  const { meta } = await c.env.DB.prepare('DELETE FROM todos WHERE id = ?')
+    .bind(id)
+    .run();
+
+  if (meta.changes === 0) {
+    return c.json({ error: 'todo not found' }, 404);
+  }
+
+  return c.body(null, 204);
 });
 
 export default app;
