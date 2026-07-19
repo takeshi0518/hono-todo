@@ -41,4 +41,30 @@ app.delete('/todos/:id', async (c) => {
   return c.body(null, 204);
 });
 
+app.put('/todos/:id', async (c) => {
+  const id = c.req.param('id');
+  let body;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ error: 'invalid JSON' }, 400);
+  }
+
+  if (typeof body.completed !== 'boolean') {
+    return c.json({ error: 'completed must be a boolean' }, 400);
+  }
+
+  const { meta } = await c.env.DB.prepare(
+    'UPDATE todos SET completed = ? WHERE id = ?'
+  )
+    .bind(body.completed ? 1 : 0, id)
+    .run();
+
+  if (meta.changes === 0) {
+    return c.json({ error: 'todo not found' }, 404);
+  }
+
+  return c.body(null, 204);
+});
+
 export default app;
