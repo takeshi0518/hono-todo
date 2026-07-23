@@ -4,6 +4,18 @@ import { zValidator } from '@hono/zod-validator';
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
 
+type TodoRow = {
+  id: number;
+  title: string;
+  completed: number;
+  created_at: string;
+};
+
+const toTodoResponse = (row: TodoRow) => ({
+  ...row,
+  completed: row.completed === 1,
+});
+
 const createTodoSchema = z.object({
   title: z.string().trim().min(1),
 });
@@ -13,8 +25,11 @@ const updateTodoSchema = z.object({
 });
 
 app.get('/todos', async (c) => {
-  const { results } = await c.env.DB.prepare('SELECT * FROM todos').all();
-  return c.json(results);
+  const { results } = await c.env.DB.prepare(
+    'SELECT * FROM todos'
+  ).all<TodoRow>();
+
+  return c.json(results.map(toTodoResponse));
 });
 
 app.post('/todos', zValidator('json', createTodoSchema), async (c) => {
@@ -24,9 +39,13 @@ app.post('/todos', zValidator('json', createTodoSchema), async (c) => {
     'INSERT INTO todos (title) VALUES (?) RETURNING *'
   )
     .bind(title)
-    .first();
+    .first<TodoRow>();
 
-  return c.json(created, 201);
+  if (!created) {
+    return c.json({ error: 'failed to create todo' }, 500);
+  }
+
+  return c.json(toTodoResponse(created), 201);
 });
 
 app.delete('/todos/:id', async (c) => {
