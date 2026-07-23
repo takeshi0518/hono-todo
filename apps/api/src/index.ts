@@ -8,6 +8,10 @@ const createTodoSchema = z.object({
   title: z.string().trim().min(1),
 });
 
+const updateTodoSchema = z.object({
+  completed: z.boolean().transform((v) => (v ? 1 : 0)),
+});
+
 app.get('/todos', async (c) => {
   const { results } = await c.env.DB.prepare('SELECT * FROM todos').all();
   return c.json(results);
@@ -38,23 +42,14 @@ app.delete('/todos/:id', async (c) => {
   return c.body(null, 204);
 });
 
-app.put('/todos/:id', async (c) => {
+app.put('/todos/:id', zValidator('json', updateTodoSchema), async (c) => {
   const id = c.req.param('id');
-  let body;
-  try {
-    body = await c.req.json();
-  } catch {
-    return c.json({ error: 'invalid JSON' }, 400);
-  }
-
-  if (typeof body.completed !== 'boolean') {
-    return c.json({ error: 'completed must be a boolean' }, 400);
-  }
+  const { completed } = c.req.valid('json');
 
   const { meta } = await c.env.DB.prepare(
     'UPDATE todos SET completed = ? WHERE id = ?'
   )
-    .bind(body.completed ? 1 : 0, id)
+    .bind(completed, id)
     .run();
 
   if (meta.changes === 0) {
