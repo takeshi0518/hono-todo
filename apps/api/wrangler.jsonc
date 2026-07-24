@@ -3,6 +3,8 @@
   "name": "hono-todo-api",
   "main": "src/index.ts",
   "compatibility_date": "2026-07-17",
+  "workers_dev": true,
+  "preview_urls": true,
   "d1_databases": [
     {
       "binding": "DB",
